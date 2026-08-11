@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Reset from './components/decorator-reset'
 import { Meta } from '@storybook/react'
-import { Leva, LevaPanel, useControls, useCreateStore } from '../src'
+import { folder, Leva, LevaPanel, useControls, useCreateStore } from '../src'
 
 export default {
   title: 'Dev/BugRepro',
@@ -102,3 +102,54 @@ export const ConditionalControls = () => {
 }
 
 ConditionalControls.storyName = '540 / conditional controls should work'
+
+// repro for https://github.com/pmndrs/leva/issues/578
+// same as the repro for issue 540 but under StrictMode
+
+const ConditionalComponent = ({ store }) => {
+  const controls = useControls(
+    {
+      color: '#00aa88',
+      Advanced: folder({
+        moreSettings: false,
+        roughness: {
+          value: 0.5,
+          min: 0,
+          max: 1,
+          step: 0.01,
+          render: (get) => get('Advanced.moreSettings'),
+        },
+        metalness: {
+          value: 0.5,
+          min: 0,
+          max: 1,
+          step: 0.01,
+          render: (get) => get('Advanced.moreSettings'),
+        },
+      }),
+      doubleSide: { value: false } 
+    },
+    { store }
+  )
+
+  return (
+    <div>
+      <pre>{JSON.stringify(controls, null, '  ')}</pre>
+    </div>
+  )
+}
+
+export const ConditionalControlsStrictMode = () => {
+  const store = useCreateStore()
+
+  return (
+    <React.StrictMode>
+      <div className="App">
+        <ConditionalComponent store={store} />
+        <LevaPanel store={store} />
+      </div>
+    </React.StrictMode>
+  )
+}
+
+ConditionalControlsStrictMode.storyName = '578 / conditional controls should work under StrictMode'
