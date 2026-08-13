@@ -3,6 +3,9 @@ packages:
   - 'packages/*'
   - 'demo'
 
+allowBuilds:
+  esbuild: true
+
 catalog:
   typescript: ^5.7.2
   '@use-gesture/react': ^10.3.1
